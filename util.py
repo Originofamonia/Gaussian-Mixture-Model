@@ -12,7 +12,7 @@ def plot_1D(gmm,x,col):
   ys = np.zeros_like(x)
 
   i=0
-  for w in gmm.phi:
+  for w in gmm.pi:
       y=sp.multivariate_normal.pdf(x, mean=gmm.mean_arr[i], cov=gmm.sigma_arr[i])*w
 
       plt.plot(x, y)
