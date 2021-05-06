@@ -1,5 +1,8 @@
-# Author -----Sohaib Kiani and Usman Sajid
+# https://github.com/Originofamonia/Gaussian-Mixture-Model
 import pandas as pd
+import numpy as np
+from numpy import genfromtxt
+
 from GMM import *
 import util as plot
 
@@ -28,16 +31,35 @@ def for_glass(k=2):
     col = 'Fe'
     x = data[[col]]
     x = np.array(x)
-    k = 1
+    # k = 1
 
     gmm = GaussianMixModel(x, k)
     gmm.fit()
     plot.plot_1D(gmm, x, col)
 
 
+def lifesci(k=3):
+    lifesci = genfromtxt('data/lifesci.csv', delimiter=',')
+    lifesci = lifesci[:, :10]
+    normalizer = 1.0 / np.sqrt(np.amax(np.sum(lifesci ** 2, axis=1)))
+    x = lifesci * normalizer
+    col = ['1', '2']
+    label = np.zeros(len(x))
+
+    # col, label, x = get_iris_data()
+    x_train = x[:int(0.9 * len(x))]
+    x_test = x[int(0.9 * len(x)):]
+
+    gmm = GaussianMixModel(x_train, total_eps=0.1, k=k)
+    gmm.fit()
+
+    plot.plot_2D(gmm, x_train, col, label)
+
+
 def main():
-    # For_Glass()
-    for_iris(k=3)
+    np.random.seed(44)
+    # for_iris(k=3)
+    lifesci()
 
 
 if __name__ == "__main__":

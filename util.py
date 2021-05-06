@@ -13,7 +13,7 @@ def plot_1D(gmm, x, col):
 
     i = 0
     for w in gmm.pi:
-        y = sp.multivariate_normal.pdf(x, mean=gmm.mean[i], cov=gmm.sigma[i]) * w
+        y = sp.multivariate_normal.pdf(x, mean=gmm.mu[i], cov=gmm.sigma[i]) * w
 
         plt.plot(x, y)
         ys += y
@@ -25,7 +25,7 @@ def plot_1D(gmm, x, col):
 
 
 def make_ellipses(gmm, ax):
-    colors = ['turquoise', 'orange']
+    # colors = ['turquoise', 'orange']
     for n in range(gmm.k):
         covariances = gmm.sigma[n]
         v, w = np.linalg.eigh(covariances)
@@ -33,7 +33,7 @@ def make_ellipses(gmm, ax):
         angle = np.arctan2(u[1], u[0])
         angle = 180 * angle / np.pi  # convert to degrees
         v = 3. * np.sqrt(2.) * np.sqrt(v)
-        mean = gmm.mean[n]
+        mean = gmm.mu[n]
         mean = mean.reshape(2, 1)
         print(mean)
         ell = mpl.patches.Ellipse(mean, v[0], v[1],
