@@ -1,4 +1,6 @@
-# https://github.com/mijungi/dpem_code
+"""
+https://github.com/mijungi/dpem_code
+"""
 import numpy as np
 from scipy.optimize import fsolve
 import scipy.stats as sp
@@ -14,7 +16,7 @@ class GaussianMixModel(object):
         self.k = k
         self.thresh = 1e-4
         self.max_iter = 10
-        self.lap = False
+        self.lap = True
         self.total_del = 1e-4
         self.total_eps = total_eps
         self.pi_prior = 2 * np.ones(self.k)
@@ -42,10 +44,10 @@ class GaussianMixModel(object):
         previous_logl = 0
         while num_iters < self.max_iter:
             # previous_logl = self.loglikelihood()
-            if self.total_eps != 0:
+            if self.total_eps != 0:  # DP version
                 ess = self.e_step()
                 self.m_step(ess)
-            else:
+            else:  # non-DP version
                 self.e_step()
                 self.m_step()
             num_iters += 1
@@ -108,11 +110,12 @@ class GaussianMixModel(object):
         # Updating mean and variance
         if self.total_eps != 0:  # DP version
             self.cond_gauss_cpd_fit_ess(ess)
-            self.pi = (ess.wsum + self.pi_prior - 1) / np.sum(ess.wsum + self.pi_prior - 1)
+            _, _, wsum, _ = ess
+            self.pi = (wsum + self.pi_prior - 1) / np.sum(wsum + self.pi_prior - 1)
 
             if self.lap:
                 lap_noise_var = 2 / (self.n * self.eps_prime)
-                noise = self.laprnd(self.k, 1, 0, np.sqrt(2) * lap_noise_var)
+                noise = np.squeeze(self.laprnd(self.k, 1, 0, np.sqrt(2) * lap_noise_var))
             else:
                 sensitiv = 2 / self.n
                 sigma = sensitiv / self.eps_prime
@@ -162,7 +165,7 @@ class GaussianMixModel(object):
 
             if self.lap:
                 noise_var_for_mean2 = l1sen_mean[k] / self.eps_prime
-                noise_for_mean = self.laprnd(self.d, 1, 0, np.sqrt(2) * noise_var_for_mean2)
+                noise_for_mean = np.squeeze(self.laprnd(self.d, 1, 0, np.sqrt(2) * noise_var_for_mean2))
             else:  # Gaussian
                 mudiff = l1sen_mean[k] / np.sqrt(self.d)
                 sigma = mudiff / self.eps_prime

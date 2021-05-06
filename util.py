@@ -48,7 +48,7 @@ def plot_2D(gmm, x, col, label):
     h = plt.subplot(111, aspect='equal')
     make_ellipses(gmm, h)
 
-    plt.scatter(x[:, 0], x[:, 1], c=label['Species'], marker='x')
+    plt.scatter(x[:, 0], x[:, 1], c=label, marker='x')
     plt.xlim(-3, 9)
     plt.ylim(-3, 9)
     plt.xlabel(col[0])

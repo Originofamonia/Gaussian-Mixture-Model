@@ -1,4 +1,7 @@
-# https://github.com/Originofamonia/Gaussian-Mixture-Model
+"""
+https://github.com/Originofamonia/Gaussian-Mixture-Model
+The smaller the epsilon is, the stronger the privacy will be.
+"""
 import pandas as pd
 import numpy as np
 from numpy import genfromtxt
@@ -44,16 +47,16 @@ def lifesci(k=3):
     normalizer = 1.0 / np.sqrt(np.amax(np.sum(lifesci ** 2, axis=1)))
     x = lifesci * normalizer
     col = ['1', '2']
-    label = np.zeros(len(x))
 
     # col, label, x = get_iris_data()
-    x_train = x[:int(0.9 * len(x))]
-    x_test = x[int(0.9 * len(x)):]
 
-    gmm = GaussianMixModel(x_train, total_eps=0.1, k=k)
+    label = np.zeros(len(x))
+
+    gmm = GaussianMixModel(x, total_eps=0.1, k=k)
+    # gmm.total_eps = 0  # 0: non-DP version
     gmm.fit()
 
-    plot.plot_2D(gmm, x_train, col, label)
+    plot.plot_2D(gmm, x, col, label)
 
 
 def main():
